@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import time
 
 # loading all the points from the data files into arrays
 
@@ -86,9 +85,7 @@ def roulette_wheel_selection(population):
         if spin <= cumulative_probability[i]:
             selected_index = i
             break
-
     return population[selected_index]
- 
 def select_parents(population,numPairs):
     parents = []
     #generate parent pairs array the half the size of the population
@@ -100,7 +97,7 @@ def select_parents(population,numPairs):
 
     
 
-   
+    
 # Function to perform uniform crossover between two parents
 def crossover(parent1, parent2, cprob):
     
@@ -168,7 +165,6 @@ New population: Crossover and Elitism
 """
 
 def genetic_algorithm_final():
-    start_time = time.time()
     #properties of the Genetic Algorithm
     pop_size = 10
     cprob = 0.75
@@ -217,15 +213,16 @@ def genetic_algorithm_final():
             
         best_fitness = current_best_fitness
       
-        
+        fitnesses.append(best_fitness)
         if best_fitness < 2.905 :
-            end_time = time.time()
-            elapsed_time = end_time() - start_time
             print(f"Terminating on generation {generation} due to good fitness value of {best_fitness}. ")
-            print(f"Best chromosome: {current_best_chrom}  found after {elapsed_time:.4f} seconds")
+            print(f"Best chromosome: {current_best_chrom}")
             break
-  
-    
+    x = np.arange(generation)
+    y = fitnesses
+    fig, ax = plt.subplots()
+    ax.plot(x,y)
+    plt.show
     return current_best_chrom
    
 genetic_algorithm_final()
