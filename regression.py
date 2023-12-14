@@ -1,7 +1,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import random
 #ao ∈ [0, 2], a1 ∈ [−2, 0], and a2 ∈ [−1, 1].
 def my_fun(x,y,a0,a1,a2):
     return (a0*np.cbrt(x-5)) + (a1*np.cbrt(y+5)) + a2
