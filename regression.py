@@ -1,7 +1,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random
 
 #ao ∈ [0, 2], a1 ∈ [−2, 0], and a2 ∈ [−1, 1].
 def my_fun(x,y,a0,a1,a2):
@@ -45,16 +44,6 @@ def evaluate(chromosome, dataset):
     return fitness
 
 
-pop = gen_population(5)
-obj_function([3,5,7],[1,3,5])
-
-
-def select_parents(population,numPairs):
-    parents = []
-    #generate parent pairs array the half the size of the population
-    for _ in range(numPairs):
-        parents.append([roulette_wheel_selection(population),roulette_wheel_selection(population)])
-    return parents
 
 def roulette_wheel_selection(population):
     
@@ -71,6 +60,15 @@ def roulette_wheel_selection(population):
     
     selected_index = -1
     spin = random.uniform(0, 1)
+
+
+def select_parents(population,numPairs):
+    parents = []
+    #generate parent pairs array the half the size of the population
+    for _ in range(numPairs):
+        parents.append([roulette_wheel_selection(population),roulette_wheel_selection(population)])
+    return parents
+
     
 
     for i, prob in enumerate(selection_probs):
@@ -204,6 +202,6 @@ def genetic_algorithm_final(dataset):
     fig, ax = plt.subplots()
     ax.plot(x,y)
     plt.show
-    
+    return current_best_chrom
    
 
