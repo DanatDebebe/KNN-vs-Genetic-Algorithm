@@ -2,6 +2,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import time
+
+# loading all the points from the data files into arrays
+
+tset_file = open("data/training_set_v2", "r")
+tlabel_file = open("data/training_labels_v2", "r")
+
+tcom = []
+tset = []       #x,y pairs
+tz = []         #Z values that are going to be used to compute the objective function
+tlabel = []     
+
+
+for i in tset_file.readlines():
+    x0,x1,x2 = i.split(sep=',')
+    tset += [[float(x0),float(x1)]]
+    tz += [float(x2)]
+    tcom += [[float(x0),float(x1),float(x2)]]
+tset_file.close()
+
+
+
+
 #ao ∈ [0, 2], a1 ∈ [−2, 0], and a2 ∈ [−1, 1].
 def my_fun(x,y,a0,a1,a2):
     return (a0*np.cbrt(x-5)) + (a1*np.cbrt(y+5)) + a2
@@ -34,15 +57,14 @@ def gen_population(size):
 
 """
 
-def evaluate(chromosome, dataset):
+def evaluate(chromosome):
     predictions = [] 
     for i in range(len(tset)) :
-        predictions.append(my_fun(dataset[i][0],dataset[i][1],chromosome[0], chromosome[1], chromosome[2]))
-    fitness = obj_function(predictions, dataset[2])
+        predictions.append(my_fun(tset[i][0],tset[i][1],chromosome[0], chromosome[1], chromosome[2]))
+    fitness = obj_function(predictions, tz)
     
     
     return fitness
-
 
 
 def roulette_wheel_selection(population):
@@ -60,8 +82,13 @@ def roulette_wheel_selection(population):
     
     selected_index = -1
     spin = random.uniform(0, 1)
+    for i, prob in enumerate(selection_probs):
+        if spin <= cumulative_probability[i]:
+            selected_index = i
+            break
 
-
+    return population[selected_index]
+ 
 def select_parents(population,numPairs):
     parents = []
     #generate parent pairs array the half the size of the population
@@ -71,14 +98,11 @@ def select_parents(population,numPairs):
 
     
 
-    for i, prob in enumerate(selection_probs):
-        if spin <= cumulative_probability[i]:
-            selected_index = i
-            break
+    
 
-    return population[selected_index]
+   
 # Function to perform uniform crossover between two parents
-def crossover(parent1, parent2, crossover_probability):
+def crossover(parent1, parent2, cprob):
     
     # Create an empty child chromosome
     child1 = [0]*3
@@ -86,7 +110,7 @@ def crossover(parent1, parent2, crossover_probability):
     crossover = False
     # Uniformly select genes from parents to create the child chromosome
     for i in range(len(parent1)):
-        if random.uniform(0,1) <= crossover_probability:
+        if random.uniform(0,1) <= cprob:
             
             r = random.uniform(0,1)
             
@@ -143,7 +167,8 @@ Muation: Non unifiorm muation, based on the change of the fitness between genera
 New population: Crossover and Elitism      
 """
 
-def genetic_algorithm_final(dataset):
+def genetic_algorithm_final():
+    start_time = time.time()
     #properties of the Genetic Algorithm
     pop_size = 10
     cprob = 0.75
@@ -164,7 +189,7 @@ def genetic_algorithm_final(dataset):
         generation +=1
         parent_pairs = select_parents(pop, numPairs)
         current_best_chrom, elites, average_fitness = get_best(pop, elitism_size)
-        current_best_fitness = evaluate(current_best_chrom, dataset)
+        current_best_fitness = evaluate(current_best_chrom)
         
         diversity_check = abs((best_fitness-current_best_fitness)/best_fitness)
         
@@ -181,7 +206,7 @@ def genetic_algorithm_final(dataset):
             mutation_prob *= 0.2  
         new_population = []
         for i in parent_pairs:
-            child1, child2 = crossover(np.array(i[0]),np.array(i[1]),crate)
+            child1, child2 = crossover(np.array(i[0]),np.array(i[1]),cprob)
             child1 = mutate(child1,mutation_prob)
             child2 = mutate(child2,mutation_prob)
             new_population.append(child1)
@@ -192,16 +217,15 @@ def genetic_algorithm_final(dataset):
             
         best_fitness = current_best_fitness
       
-        fitnesses.append(best_fitness)
+        
         if best_fitness < 2.905 :
+            end_time = time.time()
+            elapsed_time = end_time() - start_time
             print(f"Terminating on generation {generation} due to good fitness value of {best_fitness}. ")
-            print(f"Best chromosome: {current_best_chrom}")
+            print(f"Best chromosome: {current_best_chrom}  found after {elapsed_time:.4f} seconds")
             break
-    x = np.arange(generation)
-    y = fitnesses
-    fig, ax = plt.subplots()
-    ax.plot(x,y)
-    plt.show
+  
+    
     return current_best_chrom
    
-
+genetic_algorithm_final()
