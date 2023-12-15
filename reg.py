@@ -218,7 +218,7 @@ def genetic_algorithm_final():
         best_fitness = current_best_fitness
       
         
-        if best_fitness < 2.905 :
+        if best_fitness < 2.98 :
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"Terminating on generation {generation} due to good fitness value of {best_fitness}. ")
